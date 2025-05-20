@@ -3,18 +3,22 @@ package handler
 import (
 	"net/http"
 
-	"github.com/ShekleinAleksey/top-places/internal/app/service"
+	"github.com/ShekleinAleksey/top-places/internal/service"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Handler struct {
-	service *service.Service
+	countryHandler *CountryHandler
+	placeHandler   *PlaceHandler
 }
 
-func NewHandler(service *service.Service) *Handler {
-	return &Handler{service: service}
+func NewHandler(services *service.Service) *Handler {
+	return &Handler{
+		countryHandler: NewCountryHandler(services.CountryService),
+		placeHandler:   NewPlaceHandler(services.PlaceService),
+	}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
@@ -33,10 +37,20 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	country := router.Group("/country")
+	country := router.Group("/countries")
 	{
-		country.GET("/", h.GetCountry)
-		country.POST("/", h.AddCountry)
+		country.GET("/", h.countryHandler.GetCountry)
+		country.GET("/:id", h.countryHandler.GetCountryByID)
+		country.POST("/", h.countryHandler.AddCountry)
+		country.DELETE("/:id", h.countryHandler.DeleteCountry)
+	}
+	places := router.Group("/places")
+	{
+		places.POST("/", h.placeHandler.CreatePlace)
+		places.GET("/", h.placeHandler.GetAllPlaces)
+		places.GET("/:id", h.placeHandler.GetPlace)
+		places.PUT("/:id", h.placeHandler.UpdatePlace)
+		places.DELETE("/:id", h.placeHandler.DeletePlace)
 	}
 
 	return router

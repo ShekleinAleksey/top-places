@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/ShekleinAleksey/top-places/internal/app/repository"
-	"github.com/ShekleinAleksey/top-places/internal/app/service"
 	"github.com/ShekleinAleksey/top-places/internal/handler"
+	"github.com/ShekleinAleksey/top-places/internal/repository"
+	"github.com/ShekleinAleksey/top-places/internal/service"
 	"github.com/ShekleinAleksey/top-places/pkg/postgres"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"

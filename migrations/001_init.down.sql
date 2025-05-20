@@ -1,1 +1,3 @@
-DROP TABLE country;
+DROP TABLE IF EXISTS place_photos;
+DROP TABLE IF EXISTS places;
+DROP TABLE IF EXISTS countries;

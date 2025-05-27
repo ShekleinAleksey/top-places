@@ -13,6 +13,11 @@ import (
 	"github.com/spf13/viper"
 )
 
+// @title BestPlace Service
+// @version 1.0
+// @description API Service for BestPlace App
+// @host 95.174.91.82:8080
+// @BasePath /
 func Run() {
 	logrus.SetFormatter(&logrus.JSONFormatter{
 		TimestampFormat: "2006-01-02 15:04:05",

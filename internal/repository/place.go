@@ -149,3 +149,14 @@ func (r *PlaceRepository) Delete(id int) error {
 
 	return tx.Commit()
 }
+
+func (r *PlaceRepository) GetPlacesByCountryID(countryID int) ([]entity.Place, error) {
+	var places []entity.Place
+	query := `
+        SELECT id, name, description, longitude, latitude 
+        FROM places 
+        WHERE country_id = $1
+    `
+	err := r.db.Select(&places, query, countryID)
+	return places, err
+}

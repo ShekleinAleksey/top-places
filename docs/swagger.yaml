@@ -1,0 +1,255 @@
+basePath: /
+definitions:
+  entity.Country:
+    properties:
+      capital:
+        type: string
+      currency:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      language:
+        type: string
+      name:
+        type: string
+      url:
+        type: string
+    required:
+    - capital
+    - name
+    type: object
+  entity.Place:
+    properties:
+      country_id:
+        type: integer
+      description:
+        type: string
+      id:
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      url:
+        items:
+          type: string
+        type: array
+    required:
+    - name
+    type: object
+  handler.errorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+host: 95.174.91.82:8080
+info:
+  contact: {}
+  description: API Service for BestPlace App
+  title: BestPlace Service
+  version: "1.0"
+paths:
+  /countries/{country_id}/places:
+    get:
+      description: Возвращает список всех мест для указанной страны
+      parameters:
+      - description: ID страны
+        in: path
+        name: country_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Place'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить места по стране
+      tags:
+      - Places
+  /countries/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Обновляет данные страны по ID
+      parameters:
+      - description: ID страны
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Данные для обновления
+        in: body
+        name: country
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Country'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Country'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить страну
+      tags:
+      - Countries
+  /country/:
+    get:
+      consumes:
+      - application/json
+      description: get country
+      operationId: get-country
+      parameters:
+      - description: Country ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: GetCountry
+      tags:
+      - country
+    post:
+      consumes:
+      - application/json
+      description: add country
+      operationId: add-country
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Country'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: AddCountry
+      tags:
+      - country
+  /country/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete country by ID
+      operationId: delete-country
+      parameters:
+      - description: Country ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"status": "success", "deleted_id": id}'
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Delete country
+      tags:
+      - country
+    get:
+      consumes:
+      - application/json
+      description: Get country by ID
+      operationId: get-country-by-id
+      parameters:
+      - description: Country ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Country'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get country by ID
+      tags:
+      - country
+swagger: "2.0"

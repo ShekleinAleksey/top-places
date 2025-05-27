@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS places (
     description TEXT,
     longitude DECIMAL(10, 6),
     latitude DECIMAL(10, 6)
+    country_id INTEGER NOT NULL REFERENCES countries(id) ON DELETE CASCADE
 );
 
 -- Таблица фотографий мест (для хранения массива URL)
@@ -29,3 +30,4 @@ CREATE TABLE IF NOT EXISTS place_photos (
 CREATE INDEX IF NOT EXISTS idx_countries_name ON countries(name);
 CREATE INDEX IF NOT EXISTS idx_places_name ON places(name);
 CREATE INDEX IF NOT EXISTS idx_place_photos_place_id ON place_photos(place_id);
+CREATE INDEX IF NOT EXISTS idx_places_country_id ON places(country_id);

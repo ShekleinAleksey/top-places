@@ -108,3 +108,32 @@ func (h *PlaceHandler) DeletePlace(c *gin.Context) {
 
 	c.Status(http.StatusNoContent)
 }
+
+// GetPlacesByCountryHandler возвращает места по стране
+// @Summary Получить места по стране
+// @Description Возвращает список всех мест для указанной страны
+// @Tags Places
+// @Produce json
+// @Param country_id path int true "ID страны"
+// @Success 200 {array} entity.Place
+// @Failure 404 {object} map[string]string
+// @Router /countries/{country_id}/places [get]
+func (h *PlaceHandler) GetPlacesByCountryHandler(c *gin.Context) {
+	countryID, err := strconv.Atoi(c.Param("country_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid country ID"})
+		return
+	}
+
+	places, err := h.service.GetPlacesByCountry(countryID)
+	if err != nil {
+		status := http.StatusInternalServerError
+		if err.Error() == "country not found" {
+			status = http.StatusNotFound
+		}
+		c.JSON(status, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, places)
+}

@@ -6,6 +6,7 @@ type Place struct {
 	Description string   `json:"description" db:"description"`
 	Longitude   float64  `json:"longitude" db:"longitude"`
 	Latitude    float64  `json:"latitude" db:"latitude"`
+	CountryID   int      `json:"country_id" db:"country_id"`
 	PhotoURLs   []string `json:"url" db:"-"`
 }
 

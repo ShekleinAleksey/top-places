@@ -72,6 +72,35 @@ func (r *CountryRepository) AddCountry(country *entity.Country) (int, error) {
 	return countryID, nil
 }
 
+func (r *CountryRepository) UpdateCountry(country *entity.Country) (*entity.Country, error) {
+	query := `
+        UPDATE countries 
+        SET name = :name,
+            capital = :capital,
+            language = :language,
+            currency = :currency,
+            description = :description,
+        WHERE id = :id
+        RETURNING id
+    `
+
+	result, err := r.db.NamedExec(query, country)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update country: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return nil, fmt.Errorf("country not found")
+	}
+
+	return country, nil
+}
+
 func (r *CountryRepository) DeleteCountry(id int) (int, error) {
 	// Проверяем существование страны перед удалением
 	var exists bool

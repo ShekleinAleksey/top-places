@@ -19,7 +19,7 @@ func NewPlaceRepository(db *sqlx.DB) *PlaceRepository {
 func (r *PlaceRepository) Create(place *entity.Place) (*entity.Place, error) {
 	query := `
 		INSERT INTO places (name, description, longitude, latitude)
-		VALUES (:name, :description, :longitude, :latitude)
+		VALUES (:name, :description, :longitude, :latitude, :country_id)
 		RETURNING id
 	`
 

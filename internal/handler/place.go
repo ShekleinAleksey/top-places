@@ -119,7 +119,7 @@ func (h *PlaceHandler) DeletePlace(c *gin.Context) {
 // @Failure 404 {object} map[string]string
 // @Router /countries/{country_id}/places [get]
 func (h *PlaceHandler) GetPlacesByCountryHandler(c *gin.Context) {
-	countryID, err := strconv.Atoi(c.Param("country_id"))
+	countryID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid country ID"})
 		return

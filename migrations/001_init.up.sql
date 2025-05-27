@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS places (
     name VARCHAR(100) NOT NULL,
     description TEXT,
     longitude DECIMAL(10, 6),
-    latitude DECIMAL(10, 6)
+    latitude DECIMAL(10, 6),
     country_id INTEGER NOT NULL REFERENCES countries(id) ON DELETE CASCADE
 );
 

@@ -197,5 +197,9 @@ func (h *CountryHandler) SearchCountries(c *gin.Context) {
 		return
 	}
 
+	if countries == nil {
+		countries = []entity.Country{}
+	}
+
 	c.JSON(http.StatusOK, countries)
 }

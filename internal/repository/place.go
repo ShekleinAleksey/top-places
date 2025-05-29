@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/ShekleinAleksey/top-places/internal/entity"
 	"github.com/jmoiron/sqlx"
@@ -159,4 +160,38 @@ func (r *PlaceRepository) GetPlacesByCountryID(countryID int) ([]entity.Place, e
     `
 	err := r.db.Select(&places, query, countryID)
 	return places, err
+}
+
+func (r *PlaceRepository) SearchByName(query string, limit int) ([]entity.Place, error) {
+	query = strings.TrimSpace(query)
+	if query == "" {
+		return []entity.Place{}, nil
+	}
+
+	rows, err := r.db.Query(`
+		SELECT id, name, description, longitude, latitude, country_id
+		FROM places
+		WHERE name ILIKE '%' || $1 || '%'
+		ORDER BY name
+		LIMIT $2
+	`, query, limit)
+	if err != nil {
+		return nil, fmt.Errorf("failed to search places: %w", err)
+	}
+	defer rows.Close()
+
+	var places []entity.Place
+	for rows.Next() {
+		var p entity.Place
+		if err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.Longitude, &p.Latitude, &p.CountryID); err != nil {
+			return nil, fmt.Errorf("failed to scan place: %w", err)
+		}
+		places = append(places, p)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows error: %w", err)
+	}
+
+	return places, nil
 }

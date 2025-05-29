@@ -137,3 +137,22 @@ func (h *PlaceHandler) GetPlacesByCountryHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, places)
 }
+
+func (h *PlaceHandler) SearchPlaces(c *gin.Context) {
+	query := c.Query("q")
+
+	limit := 10
+	if l := c.Query("limit"); l != "" {
+		if l, err := strconv.Atoi(l); err == nil && l > 0 {
+			limit = l
+		}
+	}
+
+	places, err := h.service.SearchPlaces(query, limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, places)
+}

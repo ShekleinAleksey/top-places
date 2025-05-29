@@ -56,6 +56,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		places.GET("/:id", h.placeHandler.GetPlace)
 		places.PUT("/:id", h.placeHandler.UpdatePlace)
 		places.DELETE("/:id", h.placeHandler.DeletePlace)
+
+		places.GET("/search", h.placeHandler.SearchPlaces)
 	}
 
 	return router

@@ -61,3 +61,16 @@ func (s *PlaceService) GetPlacesByCountry(countryID int) ([]entity.Place, error)
 
 	return s.repo.GetPlacesByCountryID(countryID)
 }
+
+func (s *PlaceService) SearchPlaces(query string, limit int) ([]entity.Place, error) {
+	places, err := s.repo.SearchByName(query, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	if places == nil {
+		return []entity.Place{}, nil
+	}
+
+	return places, nil
+}

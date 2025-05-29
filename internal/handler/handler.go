@@ -45,6 +45,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		country.PUT("/:id", h.countryHandler.UpdateCountry)
 		country.DELETE("/:id", h.countryHandler.DeleteCountry)
 
+		country.GET("/search", h.countryHandler.SearchCountries)
+
 		country.GET("/:id/places", h.placeHandler.GetPlacesByCountryHandler)
 	}
 	places := router.Group("/places")

@@ -47,3 +47,7 @@ func (s *CountryService) UpdateCountry(country *entity.Country) (*entity.Country
 
 	return s.repo.UpdateCountry(country)
 }
+
+func (s *CountryService) SearchCountries(query string, limit int) ([]entity.Country, error) {
+	return s.repo.SearchByName(query, limit)
+}

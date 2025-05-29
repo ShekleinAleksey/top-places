@@ -176,3 +176,26 @@ func (h *CountryHandler) DeleteCountry(c *gin.Context) {
 		"deleted_id": deletedID,
 	})
 }
+
+func (h *CountryHandler) SearchCountries(c *gin.Context) {
+	query := c.Query("q")
+	// if len(query) < 2 {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Query must be at least 2 characters"})
+	// 	return
+	// }
+
+	limit := 10
+	if l := c.Query("limit"); l != "" {
+		if l, err := strconv.Atoi(l); err == nil && l > 0 {
+			limit = l
+		}
+	}
+
+	countries, err := h.service.SearchCountries(query, limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, countries)
+}

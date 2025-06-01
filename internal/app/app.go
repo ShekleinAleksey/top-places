@@ -74,7 +74,7 @@ func Run() {
 
 	// Создание HTTP-сервера с поддержкой HTTPS
 	srv := &http.Server{
-		Addr:      ":443",
+		Addr:      ":8080",
 		Handler:   router,
 		TLSConfig: tlsConfig,
 	}

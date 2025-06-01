@@ -52,3 +52,25 @@ func (s *PlaceService) Delete(id int) error {
 	}
 	return s.repo.Delete(id)
 }
+
+func (s *PlaceService) GetPlacesByCountry(countryID int) ([]entity.Place, error) {
+	// Проверяем существование страны
+	// if _, err := s.repo.GetCountryByID(countryID); err != nil {
+	// 	return nil, fmt.Errorf("country not found")
+	// }
+
+	return s.repo.GetPlacesByCountryID(countryID)
+}
+
+func (s *PlaceService) SearchPlaces(query string, limit int) ([]entity.Place, error) {
+	places, err := s.repo.SearchByName(query, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	if places == nil {
+		return []entity.Place{}, nil
+	}
+
+	return places, nil
+}

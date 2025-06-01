@@ -78,7 +78,7 @@ func (h *CountryHandler) GetCountryByID(c *gin.Context) {
 // @ID add-country
 // @Accept  json
 // @Produce  json
-// @Success 200 {array} entity.User
+// @Success 200 {array} entity.Country
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /country/ [post]
@@ -99,6 +99,48 @@ func (h *CountryHandler) AddCountry(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"id": id,
 	})
+}
+
+// UpdateCountry godoc
+// @Summary Обновить страну
+// @Description Обновляет данные страны по ID
+// @Tags Countries
+// @Accept json
+// @Produce json
+// @Param id path int true "ID страны"
+// @Param country body entity.Country true "Данные для обновления"
+// @Success 200 {object} entity.Country
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /countries/{id} [put]
+func (h *CountryHandler) UpdateCountry(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid country ID"})
+		return
+	}
+
+	var country entity.Country
+	if err := c.ShouldBindJSON(&country); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
+		return
+	}
+	country.ID = id
+
+	updatedCountry, err := h.service.UpdateCountry(&country)
+	if err != nil {
+		status := http.StatusInternalServerError
+		if err.Error() == "country not found" {
+			status = http.StatusNotFound
+		} else if strings.Contains(err.Error(), "is required") {
+			status = http.StatusBadRequest
+		}
+		c.JSON(status, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, updatedCountry)
 }
 
 // @Summary Delete country
@@ -133,4 +175,31 @@ func (h *CountryHandler) DeleteCountry(c *gin.Context) {
 		"status":     "success",
 		"deleted_id": deletedID,
 	})
+}
+
+func (h *CountryHandler) SearchCountries(c *gin.Context) {
+	query := c.Query("q")
+	// if len(query) < 2 {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Query must be at least 2 characters"})
+	// 	return
+	// }
+
+	limit := 10
+	if l := c.Query("limit"); l != "" {
+		if l, err := strconv.Atoi(l); err == nil && l > 0 {
+			limit = l
+		}
+	}
+
+	countries, err := h.service.SearchCountries(query, limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+
+	if countries == nil {
+		countries = []entity.Country{}
+	}
+
+	c.JSON(http.StatusOK, countries)
 }

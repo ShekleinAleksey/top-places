@@ -1,9 +1,7 @@
 package app
 
 import (
-	"crypto/tls"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/ShekleinAleksey/top-places/internal/handler"
@@ -13,7 +11,6 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"golang.org/x/crypto/acme/autocert"
 )
 
 // @title BestPlace Service
@@ -60,34 +57,37 @@ func Run() {
 
 	router := handlers.InitRoutes()
 
-	certManager := &autocert.Manager{
-		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist("best-place.online"),
-		Cache:      autocert.DirCache("/var/www/.cache"), // Папка для хранения сертификатов
-	}
+	// certManager := &autocert.Manager{
+	// 	Prompt:     autocert.AcceptTOS,
+	// 	HostPolicy: autocert.HostWhitelist("best-place.online"),
+	// 	Cache:      autocert.DirCache("/var/www/.cache"), // Папка для хранения сертификатов
+	// }
 
-	// Настройка TLS
-	tlsConfig := &tls.Config{
-		GetCertificate: certManager.GetCertificate,
-		MinVersion:     tls.VersionTLS12, // Современные безопасные настройки
-	}
+	// // Настройка TLS
+	// tlsConfig := &tls.Config{
+	// 	GetCertificate: certManager.GetCertificate,
+	// 	MinVersion:     tls.VersionTLS12, // Современные безопасные настройки
+	// }
 
-	// Создание HTTP-сервера с поддержкой HTTPS
-	srv := &http.Server{
-		Addr:      ":8080",
-		Handler:   router,
-		TLSConfig: tlsConfig,
-	}
+	// // Создание HTTP-сервера с поддержкой HTTPS
+	// srv := &http.Server{
+	// 	Addr:      ":8080",
+	// 	Handler:   router,
+	// 	TLSConfig: tlsConfig,
+	// }
 
-	// Перенаправление HTTP -> HTTPS
-	go func() {
-		http.ListenAndServe(":80", certManager.HTTPHandler(nil))
-	}()
+	// // Перенаправление HTTP -> HTTPS
+	// go func() {
+	// 	http.ListenAndServe(":80", certManager.HTTPHandler(nil))
+	// }()
 
-	logrus.Info("Starting HTTPS server...")
-	if err := srv.ListenAndServeTLS("", ""); err != nil { // Пустые строки, так как сертификаты управляются autocert
-		logrus.Fatalf("Failed to start server: %v", err)
-	}
+	// logrus.Info("Starting HTTPS server...")
+	// if err := srv.ListenAndServeTLS("", ""); err != nil { // Пустые строки, так как сертификаты управляются autocert
+	// 	logrus.Fatalf("Failed to start server: %v", err)
+	// }
+
+	logrus.Info("Starting server...")
+	router.Run(":8080")
 }
 
 func initConfig() error {

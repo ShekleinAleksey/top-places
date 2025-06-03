@@ -36,11 +36,13 @@ func (r *PlaceRepository) Create(place *entity.Place) (*entity.Place, error) {
 		}
 	}
 
-	// if len(place.PhotoURLs) > 0 {
-	// 	if err := r.addPhotos(place.ID, place.PhotoURLs); err != nil {
-	// 		return nil, fmt.Errorf("failed to add photos: %w", err)
-	// 	}
-	// }
+	if len(place.PhotoURLs) > 0 {
+		for _, url := range place.PhotoURLs {
+			if err := r.addPhotos(place.ID, url); err != nil {
+				return nil, fmt.Errorf("failed to add photo %s: %w", url, err)
+			}
+		}
+	}
 
 	return place, nil
 }
@@ -61,14 +63,11 @@ func (r *PlaceRepository) GetByID(id int) (*entity.Place, error) {
 		return nil, fmt.Errorf("failed to get place: %w", err)
 	}
 
-	// photos, err := r.getPhotos(id)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("failed to get photos: %w", err)
-	// }
-	// place.PhotoURLs = photos
-	photo1 := "https://images.unsplash.com/photo-1606918801925-e2c914c4b503?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-	photo2 := "https://images.unsplash.com/photo-1599173705513-0880f530cd3d?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-	place.PhotoURLs = append(place.PhotoURLs, photo1, photo2)
+	photos, err := r.getPhotos(id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get photos: %w", err)
+	}
+	place.PhotoURLs = photos
 
 	return place, nil
 }
@@ -85,13 +84,13 @@ func (r *PlaceRepository) GetAll() ([]*entity.Place, error) {
 		return nil, fmt.Errorf("failed to get places: %w", err)
 	}
 
-	// for _, place := range places {
-	// 	photos, err := r.getPhotos(place.ID)
-	// 	if err != nil {
-	// 		return nil, fmt.Errorf("failed to get photos for place %d: %w", place.ID, err)
-	// 	}
-	// 	place.PhotoURLs = photos
-	// }
+	for _, place := range places {
+		photos, err := r.getPhotos(place.ID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get photos for place %d: %w", place.ID, err)
+		}
+		place.PhotoURLs = photos
+	}
 
 	return places, nil
 }
@@ -197,4 +196,36 @@ func (r *PlaceRepository) SearchByName(query string, limit int) ([]entity.Place,
 	}
 
 	return places, nil
+}
+
+// Фото мест
+func (r *PlaceRepository) addPhotos(placeID int, url string) error {
+	query := `
+		INSERT INTO place_photos (place_id, url)
+		VALUES ($1, $2)
+		RETURNING id
+	`
+	_, err := r.db.Exec(query, placeID, url)
+	return err
+}
+
+func (r *PlaceRepository) getPhotos(placeID int) ([]string, error) {
+	var photos []string
+	err := r.db.Select(&photos, "SELECT url FROM place_photos WHERE place_id = $1", placeID)
+	return photos, err
+}
+
+func (r *PlaceRepository) updatePhoto(photoID int, placeID int, url string) error {
+	query := `
+        UPDATE place_photos
+        SET url = $3
+        WHERE id = $1 AND place_id = $2
+    `
+	_, err := r.db.Exec(query, photoID, placeID, url)
+	return err
+}
+
+func (r *PlaceRepository) deletePhotos(id int) error {
+	_, err := r.db.Exec("DELETE FROM place_photos WHERE id = $1", id)
+	return err
 }

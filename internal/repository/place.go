@@ -161,6 +161,14 @@ func (r *PlaceRepository) GetPlacesByCountryID(countryID int) ([]entity.Place, e
         WHERE country_id = $1
     `
 	err := r.db.Select(&places, query, countryID)
+
+	for _, place := range places {
+		photoUrl, err := r.getPhotos(place.CountryID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get photos for place %d: %w", place.ID, err)
+		}
+		place.PhotoURLs = photoUrl
+	}
 	return places, err
 }
 

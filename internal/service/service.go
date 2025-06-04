@@ -10,6 +10,6 @@ type Service struct {
 func NewService(repo *repository.Repository) *Service {
 	return &Service{
 		CountryService: NewCountryService(*repo.CountryRepository),
-		PlaceService:   NewPlaceService(*&repo.PlaceRepository),
+		PlaceService:   NewPlaceService(*&repo.PlaceRepository, *&repo.CountryRepository),
 	}
 }

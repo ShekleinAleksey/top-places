@@ -351,8 +351,8 @@ const docTemplate = `{
                 "name"
             ],
             "properties": {
-                "country_id": {
-                    "type": "integer"
+                "country": {
+                    "$ref": "#/definitions/entity.Country"
                 },
                 "description": {
                     "type": "string"
@@ -390,12 +390,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
-	Host:             "95.174.91.82:8080",
-	BasePath:         "/",
+	Version:          "",
+	Host:             "",
+	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "BestPlace Service",
-	Description:      "API Service for BestPlace App",
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

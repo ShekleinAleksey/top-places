@@ -1,13 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "API Service for BestPlace App",
-        "title": "BestPlace Service",
-        "contact": {},
-        "version": "1.0"
+        "contact": {}
     },
-    "host": "95.174.91.82:8080",
-    "basePath": "/",
     "paths": {
         "/countries/{country_id}/places": {
             "get": {
@@ -345,8 +340,8 @@
                 "name"
             ],
             "properties": {
-                "country_id": {
-                    "type": "integer"
+                "country": {
+                    "$ref": "#/definitions/entity.Country"
                 },
                 "description": {
                     "type": "string"

@@ -87,8 +87,20 @@ func (s *PlaceService) GetPlacesByCountry(countryID int) ([]entity.Place, error)
 	// if _, err := s.repo.GetCountryByID(countryID); err != nil {
 	// 	return nil, fmt.Errorf("country not found")
 	// }
+	places, err := s.placeRepo.GetPlacesByCountryID(countryID)
+	if err != nil {
+		return nil, err
+	}
 
-	return s.placeRepo.GetPlacesByCountryID(countryID)
+	for _, place := range places {
+		country, err := s.countryRepo.GetCountryByID(place.CountryID)
+		if err != nil {
+			return nil, err
+		}
+		place.Country = country
+	}
+
+	return places, nil
 }
 
 func (s *PlaceService) SearchPlaces(query string, limit int) ([]entity.Place, error) {
@@ -99,6 +111,14 @@ func (s *PlaceService) SearchPlaces(query string, limit int) ([]entity.Place, er
 
 	if places == nil {
 		return []entity.Place{}, nil
+	}
+
+	for _, place := range places {
+		country, err := s.countryRepo.GetCountryByID(place.CountryID)
+		if err != nil {
+			return nil, err
+		}
+		place.Country = country
 	}
 
 	return places, nil

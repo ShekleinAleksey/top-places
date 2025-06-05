@@ -5,7 +5,6 @@ import (
 
 	"github.com/ShekleinAleksey/top-places/internal/entity"
 	"github.com/ShekleinAleksey/top-places/internal/repository"
-	"github.com/sirupsen/logrus"
 )
 
 type PlaceService struct {
@@ -83,7 +82,7 @@ func (s *PlaceService) Delete(id int) error {
 	return s.placeRepo.Delete(id)
 }
 
-func (s *PlaceService) GetPlacesByCountry(countryID int) ([]entity.Place, error) {
+func (s *PlaceService) GetPlacesByCountry(countryID int) ([]*entity.Place, error) {
 	// Проверяем существование страны
 	// if _, err := s.repo.GetCountryByID(countryID); err != nil {
 	// 	return nil, fmt.Errorf("country not found")
@@ -92,9 +91,8 @@ func (s *PlaceService) GetPlacesByCountry(countryID int) ([]entity.Place, error)
 	if err != nil {
 		return nil, err
 	}
-	logrus.Info("GetPlacesByCountry places", places)
+
 	for _, place := range places {
-		logrus.Info("place.CountryID", place.CountryID)
 		country, err := s.countryRepo.GetCountryByID(place.CountryID)
 		if err != nil {
 			return nil, err
@@ -105,18 +103,16 @@ func (s *PlaceService) GetPlacesByCountry(countryID int) ([]entity.Place, error)
 	return places, nil
 }
 
-func (s *PlaceService) SearchPlaces(query string, limit int) ([]entity.Place, error) {
+func (s *PlaceService) SearchPlaces(query string, limit int) ([]*entity.Place, error) {
 	places, err := s.placeRepo.SearchByName(query, limit)
 	if err != nil {
 		return nil, err
 	}
 
 	if places == nil {
-		return []entity.Place{}, nil
+		return []*entity.Place{}, nil
 	}
-	logrus.Info("SearchPlaces places", places)
 	for _, place := range places {
-		logrus.Info("place.CountryID", place.CountryID)
 		country, err := s.countryRepo.GetCountryByID(place.CountryID)
 		if err != nil {
 			return nil, err

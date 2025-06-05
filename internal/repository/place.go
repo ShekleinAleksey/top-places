@@ -153,8 +153,8 @@ func (r *PlaceRepository) Delete(id int) error {
 	return tx.Commit()
 }
 
-func (r *PlaceRepository) GetPlacesByCountryID(countryID int) ([]entity.Place, error) {
-	var places []entity.Place
+func (r *PlaceRepository) GetPlacesByCountryID(countryID int) ([]*entity.Place, error) {
+	var places []*entity.Place
 	query := `
         SELECT * 
         FROM places 
@@ -172,10 +172,10 @@ func (r *PlaceRepository) GetPlacesByCountryID(countryID int) ([]entity.Place, e
 	return places, err
 }
 
-func (r *PlaceRepository) SearchByName(query string, limit int) ([]entity.Place, error) {
+func (r *PlaceRepository) SearchByName(query string, limit int) ([]*entity.Place, error) {
 	query = strings.TrimSpace(query)
 	if query == "" {
-		return []entity.Place{}, nil
+		return []*entity.Place{}, nil
 	}
 
 	rows, err := r.db.Query(`
@@ -190,9 +190,9 @@ func (r *PlaceRepository) SearchByName(query string, limit int) ([]entity.Place,
 	}
 	defer rows.Close()
 
-	var places []entity.Place
+	var places []*entity.Place
 	for rows.Next() {
-		var p entity.Place
+		var p *entity.Place
 		if err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.Longitude, &p.Latitude, &p.CountryID); err != nil {
 			return nil, fmt.Errorf("failed to scan place: %w", err)
 		}

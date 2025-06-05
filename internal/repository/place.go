@@ -178,29 +178,25 @@ func (r *PlaceRepository) SearchByName(query string, limit int) ([]*entity.Place
 		return []*entity.Place{}, nil
 	}
 
-	rows, err := r.db.Query(`
+	var places []*entity.Place
+	err := r.db.Select(&places, `
 		SELECT id, name, description, longitude, latitude, country_id
 		FROM places
 		WHERE name ILIKE '%' || $1 || '%'
 		ORDER BY name
 		LIMIT $2
 	`, query, limit)
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to search places: %w", err)
 	}
-	defer rows.Close()
 
-	var places []*entity.Place
-	for rows.Next() {
-		var p *entity.Place
-		if err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.Longitude, &p.Latitude, &p.CountryID); err != nil {
-			return nil, fmt.Errorf("failed to scan place: %w", err)
+	for _, place := range places {
+		photoUrl, err := r.getPhotos(place.CountryID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get photos for place %d: %w", place.ID, err)
 		}
-		places = append(places, p)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("rows error: %w", err)
+		place.PhotoURLs = photoUrl
 	}
 
 	return places, nil

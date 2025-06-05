@@ -156,7 +156,7 @@ func (r *PlaceRepository) Delete(id int) error {
 func (r *PlaceRepository) GetPlacesByCountryID(countryID int) ([]entity.Place, error) {
 	var places []entity.Place
 	query := `
-        SELECT id, name, description, longitude, latitude 
+        SELECT * 
         FROM places 
         WHERE country_id = $1
     `

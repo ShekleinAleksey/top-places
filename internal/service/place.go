@@ -5,6 +5,7 @@ import (
 
 	"github.com/ShekleinAleksey/top-places/internal/entity"
 	"github.com/ShekleinAleksey/top-places/internal/repository"
+	"github.com/sirupsen/logrus"
 )
 
 type PlaceService struct {
@@ -91,8 +92,9 @@ func (s *PlaceService) GetPlacesByCountry(countryID int) ([]entity.Place, error)
 	if err != nil {
 		return nil, err
 	}
-
+	logrus.Info("GetPlacesByCountry places", places)
 	for _, place := range places {
+		logrus.Info("place.CountryID", place.CountryID)
 		country, err := s.countryRepo.GetCountryByID(place.CountryID)
 		if err != nil {
 			return nil, err
@@ -112,8 +114,9 @@ func (s *PlaceService) SearchPlaces(query string, limit int) ([]entity.Place, er
 	if places == nil {
 		return []entity.Place{}, nil
 	}
-
+	logrus.Info("SearchPlaces places", places)
 	for _, place := range places {
+		logrus.Info("place.CountryID", place.CountryID)
 		country, err := s.countryRepo.GetCountryByID(place.CountryID)
 		if err != nil {
 			return nil, err

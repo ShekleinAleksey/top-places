@@ -16,7 +16,7 @@ import (
 // @title BestPlace Service
 // @version 1.0
 // @description API Service for BestPlace App
-// @host 95.174.91.82:8080
+// @host best-place.online:8080
 // @BasePath /
 func Run() {
 	logrus.SetFormatter(&logrus.JSONFormatter{

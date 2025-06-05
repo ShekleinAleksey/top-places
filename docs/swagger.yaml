@@ -46,7 +46,7 @@ definitions:
       message:
         type: string
     type: object
-host: 95.174.91.82:8080
+host: best-place.online:8080
 info:
   contact: {}
   description: API Service for BestPlace App

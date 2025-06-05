@@ -46,13 +46,72 @@ definitions:
       message:
         type: string
     type: object
-host: 95.174.91.82:8080
+host: localhost:8080
 info:
   contact: {}
   description: API Service for BestPlace App
   title: BestPlace Service
   version: "1.0"
 paths:
+  /countries/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all countries
+      operationId: get-country
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Country'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get all countries
+      tags:
+      - Countries
+    post:
+      consumes:
+      - application/json
+      description: add country
+      operationId: add-country
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Country'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: AddCountry
+      tags:
+      - Countries
   /countries/{country_id}/places:
     get:
       description: Возвращает список всех мест для указанной страны
@@ -81,6 +140,69 @@ paths:
       tags:
       - Places
   /countries/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete country by ID
+      operationId: delete-country
+      parameters:
+      - description: Country ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"status": "success", "deleted_id": id}'
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Delete country
+      tags:
+      - Countries
+    get:
+      consumes:
+      - application/json
+      description: Get country by ID
+      operationId: get-country-by-id
+      parameters:
+      - description: Country ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Country'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get country by ID
+      tags:
+      - Countries
     put:
       consumes:
       - application/json
@@ -125,107 +247,144 @@ paths:
       summary: Обновить страну
       tags:
       - Countries
-  /country/:
+  /countries/search:
     get:
       consumes:
       - application/json
-      description: get country
-      operationId: get-country
+      description: Search countries by name with optional limit
       parameters:
-      - description: Country ID
-        in: path
-        name: id
+      - description: Search query (minimum 2 characters)
+        in: query
+        name: q
         required: true
         type: string
+      - description: 'Maximum number of results (default: 10)'
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: OK
-          schema:
-            type: integer
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handler.errorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handler.errorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handler.errorResponse'
-        default:
-          description: ""
-          schema:
-            $ref: '#/definitions/handler.errorResponse'
-      summary: GetCountry
-      tags:
-      - country
-    post:
-      consumes:
-      - application/json
-      description: add country
-      operationId: add-country
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
+          description: List of matching countries
           schema:
             items:
               $ref: '#/definitions/entity.Country'
             type: array
-        "500":
-          description: Internal Server Error
+        "400":
+          description: Invalid query parameters
           schema:
-            $ref: '#/definitions/handler.errorResponse'
-        default:
-          description: ""
-          schema:
-            $ref: '#/definitions/handler.errorResponse'
-      summary: AddCountry
-      tags:
-      - country
-  /country/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: delete country by ID
-      operationId: delete-country
-      parameters:
-      - description: Country ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: '{"status": "success", "deleted_id": id}'
-          schema:
-            additionalProperties: true
+            additionalProperties:
+              type: string
             type: object
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handler.errorResponse'
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
-            $ref: '#/definitions/handler.errorResponse'
-      summary: Delete country
+            additionalProperties:
+              type: string
+            type: object
+      summary: Search countries
       tags:
-      - country
+      - Countries
+  /places/:
     get:
       consumes:
       - application/json
-      description: Get country by ID
-      operationId: get-country-by-id
+      description: Возвращает список всех мест
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список мест
+          schema:
+            items:
+              $ref: '#/definitions/entity.Place'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить все места
+      tags:
+      - Places
+    post:
+      consumes:
+      - application/json
+      description: Добавляет новое место
       parameters:
-      - description: Country ID
+      - description: Данные места
+        in: body
+        name: place
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Place'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Созданное место
+          schema:
+            $ref: '#/definitions/entity.Place'
+        "400":
+          description: Неверный формат данных
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать новое место
+      tags:
+      - Places
+  /places/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет место по его ID
+      parameters:
+      - description: ID места
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Место успешно удалено
+        "400":
+          description: Неверный формат ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Место не найдено
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить место
+      tags:
+      - Places
+    get:
+      consumes:
+      - application/json
+      description: Возвращает место по ID
+      parameters:
+      - description: ID места
         in: path
         name: id
         required: true
@@ -234,22 +393,104 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Запрошенное место
           schema:
-            $ref: '#/definitions/entity.Country'
+            $ref: '#/definitions/entity.Place'
         "400":
-          description: Bad Request
+          description: Неверный формат ID
           schema:
-            $ref: '#/definitions/handler.errorResponse'
+            additionalProperties:
+              type: string
+            type: object
         "404":
-          description: Not Found
+          description: Место не найдено
           schema:
-            $ref: '#/definitions/handler.errorResponse'
+            additionalProperties:
+              type: string
+            type: object
         "500":
-          description: Internal Server Error
+          description: Внутренняя ошибка сервера
           schema:
-            $ref: '#/definitions/handler.errorResponse'
-      summary: Get country by ID
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить место по ID
       tags:
-      - country
+      - Places
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию о месте по его ID
+      parameters:
+      - description: ID места
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Обновленные данные места
+        in: body
+        name: place
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Place'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Обновленное место
+          schema:
+            $ref: '#/definitions/entity.Place'
+        "400":
+          description: Неверный формат данных
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Место не найдено
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить место
+      tags:
+      - Places
+  /places/search:
+    get:
+      consumes:
+      - application/json
+      description: Поиск мест по названию
+      parameters:
+      - description: Поисковый запрос
+        in: query
+        name: q
+        type: string
+      - description: Лимит результатов (по умолчанию 10)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список найденных мест
+          schema:
+            items:
+              $ref: '#/definitions/entity.Place'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Поиск мест
+      tags:
+      - Places
 swagger: "2.0"

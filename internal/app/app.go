@@ -16,9 +16,10 @@ import (
 // @title BestPlace Service
 // @version 1.0
 // @description API Service for BestPlace App
-// @host 95.174.91.82:8080
+// @host localhost:8080
 // @BasePath /
 func Run() {
+	//95.174.91.82:8080
 	logrus.SetFormatter(&logrus.JSONFormatter{
 		TimestampFormat: "2006-01-02 15:04:05",
 	})

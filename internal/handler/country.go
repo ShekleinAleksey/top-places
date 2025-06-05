@@ -18,18 +18,17 @@ func NewCountryHandler(service *service.CountryService) *CountryHandler {
 	return &CountryHandler{service: service}
 }
 
-// @Summary GetCountry
-// @Tags country
-// @Description get country
+// @Summary Get all countries
+// @Tags Countries
+// @Description Retrieve a list of all countries
 // @ID get-country
 // @Accept  json
 // @Produce  json
-// @Param id path string true "Country ID"
-// @Success 200 {integer} integer 1
+// @Success 200 {array} entity.Country
 // @Failure 400,404 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
-// @Router /country/ [get]
+// @Router /countries/ [get]
 func (h *CountryHandler) GetCountry(c *gin.Context) {
 	country, err := h.service.GetCountries()
 	if err != nil {
@@ -41,7 +40,7 @@ func (h *CountryHandler) GetCountry(c *gin.Context) {
 }
 
 // @Summary Get country by ID
-// @Tags country
+// @Tags Countries
 // @Description Get country by ID
 // @ID get-country-by-id
 // @Accept  json
@@ -51,7 +50,7 @@ func (h *CountryHandler) GetCountry(c *gin.Context) {
 // @Failure 400 {object} errorResponse
 // @Failure 404 {object} errorResponse
 // @Failure 500 {object} errorResponse
-// @Router /country/{id} [get]
+// @Router /countries/{id} [get]
 func (h *CountryHandler) GetCountryByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -73,7 +72,7 @@ func (h *CountryHandler) GetCountryByID(c *gin.Context) {
 }
 
 // @Summary AddCountry
-// @Tags country
+// @Tags Countries
 // @Description add country
 // @ID add-country
 // @Accept  json
@@ -81,7 +80,7 @@ func (h *CountryHandler) GetCountryByID(c *gin.Context) {
 // @Success 200 {array} entity.Country
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
-// @Router /country/ [post]
+// @Router /countries/ [post]
 func (h *CountryHandler) AddCountry(c *gin.Context) {
 	var country entity.Country
 
@@ -144,7 +143,7 @@ func (h *CountryHandler) UpdateCountry(c *gin.Context) {
 }
 
 // @Summary Delete country
-// @Tags country
+// @Tags Countries
 // @Description delete country by ID
 // @ID delete-country
 // @Accept  json
@@ -153,7 +152,7 @@ func (h *CountryHandler) UpdateCountry(c *gin.Context) {
 // @Success 200 {object} map[string]interface{} "{"status": "success", "deleted_id": id}"
 // @Failure 404 {object} errorResponse
 // @Failure 500 {object} errorResponse
-// @Router /country/{id} [delete]
+// @Router /countries/{id} [delete]
 func (h *CountryHandler) DeleteCountry(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -177,6 +176,18 @@ func (h *CountryHandler) DeleteCountry(c *gin.Context) {
 	})
 }
 
+// SearchCountries godoc
+// @Summary Search countries
+// @Description Search countries by name with optional limit
+// @Tags Countries
+// @Accept  json
+// @Produce  json
+// @Param q query string true "Search query (minimum 2 characters)"
+// @Param limit query int false "Maximum number of results (default: 10)"
+// @Success 200 {array} entity.Country "List of matching countries"
+// @Failure 400 {object} map[string]string "Invalid query parameters"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /countries/search [get]
 func (h *CountryHandler) SearchCountries(c *gin.Context) {
 	query := c.Query("q")
 	// if len(query) < 2 {

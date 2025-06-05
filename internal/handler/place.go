@@ -17,6 +17,17 @@ func NewPlaceHandler(service *service.PlaceService) *PlaceHandler {
 	return &PlaceHandler{service: service}
 }
 
+// CreatePlace создает новое место
+// @Summary Создать новое место
+// @Description Добавляет новое место
+// @Tags Places
+// @Accept json
+// @Produce json
+// @Param place body entity.Place true "Данные места"
+// @Success 201 {object} entity.Place "Созданное место"
+// @Failure 400 {object} map[string]string "Неверный формат данных"
+// @Failure 500 {object} map[string]string "Внутренняя ошибка сервера"
+// @Router /places/ [post]
 func (h *PlaceHandler) CreatePlace(c *gin.Context) {
 	var place entity.Place
 	if err := c.ShouldBindJSON(&place); err != nil {
@@ -33,6 +44,18 @@ func (h *PlaceHandler) CreatePlace(c *gin.Context) {
 	c.JSON(http.StatusCreated, createdPlace)
 }
 
+// GetPlace возвращает место по ID
+// @Summary Получить место по ID
+// @Description Возвращает место по ID
+// @Tags Places
+// @Accept json
+// @Produce json
+// @Param id path int true "ID места"
+// @Success 200 {object} entity.Place "Запрошенное место"
+// @Failure 400 {object} map[string]string "Неверный формат ID"
+// @Failure 404 {object} map[string]string "Место не найдено"
+// @Failure 500 {object} map[string]string "Внутренняя ошибка сервера"
+// @Router /places/{id} [get]
 func (h *PlaceHandler) GetPlace(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -53,6 +76,15 @@ func (h *PlaceHandler) GetPlace(c *gin.Context) {
 	c.JSON(http.StatusOK, place)
 }
 
+// GetAllPlaces возвращает все места
+// @Summary Получить все места
+// @Description Возвращает список всех мест
+// @Tags Places
+// @Accept json
+// @Produce json
+// @Success 200 {array} entity.Place "Список мест"
+// @Failure 500 {object} map[string]string "Внутренняя ошибка сервера"
+// @Router /places/ [get]
 func (h *PlaceHandler) GetAllPlaces(c *gin.Context) {
 	places, err := h.service.GetAll()
 	if err != nil {
@@ -63,6 +95,19 @@ func (h *PlaceHandler) GetAllPlaces(c *gin.Context) {
 	c.JSON(http.StatusOK, places)
 }
 
+// UpdatePlace обновляет данные места
+// @Summary Обновить место
+// @Description Обновляет информацию о месте по его ID
+// @Tags Places
+// @Accept json
+// @Produce json
+// @Param id path int true "ID места"
+// @Param place body entity.Place true "Обновленные данные места"
+// @Success 200 {object} entity.Place "Обновленное место"
+// @Failure 400 {object} map[string]string "Неверный формат данных"
+// @Failure 404 {object} map[string]string "Место не найдено"
+// @Failure 500 {object} map[string]string "Внутренняя ошибка сервера"
+// @Router /places/{id} [put]
 func (h *PlaceHandler) UpdatePlace(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -90,6 +135,18 @@ func (h *PlaceHandler) UpdatePlace(c *gin.Context) {
 	c.JSON(http.StatusOK, updatedPlace)
 }
 
+// DeletePlace удаляет место
+// @Summary Удалить место
+// @Description Удаляет место по его ID
+// @Tags Places
+// @Accept json
+// @Produce json
+// @Param id path int true "ID места"
+// @Success 204 "Место успешно удалено"
+// @Failure 400 {object} map[string]string "Неверный формат ID"
+// @Failure 404 {object} map[string]string "Место не найдено"
+// @Failure 500 {object} map[string]string "Внутренняя ошибка сервера"
+// @Router /places/{id} [delete]
 func (h *PlaceHandler) DeletePlace(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -138,6 +195,17 @@ func (h *PlaceHandler) GetPlacesByCountryHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, places)
 }
 
+// SearchPlaces ищет места по запросу
+// @Summary Поиск мест
+// @Description Поиск мест по названию
+// @Tags Places
+// @Accept json
+// @Produce json
+// @Param q query string false "Поисковый запрос"
+// @Param limit query int false "Лимит результатов (по умолчанию 10)"
+// @Success 200 {array} entity.Place "Список найденных мест"
+// @Failure 500 {object} map[string]string "Внутренняя ошибка сервера"
+// @Router /places/search [get]
 func (h *PlaceHandler) SearchPlaces(c *gin.Context) {
 	query := c.Query("q")
 

@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	_ "github.com/ShekleinAleksey/top-places/docs"
 	"github.com/ShekleinAleksey/top-places/internal/service"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"

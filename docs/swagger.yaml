@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   entity.Country:
     properties:
@@ -45,8 +46,12 @@ definitions:
       message:
         type: string
     type: object
+host: 95.174.91.82:8080
 info:
   contact: {}
+  description: API Service for BestPlace App
+  title: BestPlace Service
+  version: "1.0"
 paths:
   /countries/{country_id}/places:
     get:

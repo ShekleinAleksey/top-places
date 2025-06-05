@@ -390,12 +390,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
+	Version:          "1.0",
+	Host:             "95.174.91.82:8080",
+	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "BestPlace Service",
+	Description:      "API Service for BestPlace App",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }
